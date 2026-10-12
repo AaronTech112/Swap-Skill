@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0" />
+    <meta name="theme-color" content="#050816" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f8ff" media="(prefers-color-scheme: light)" />
+    <title>Swapski | Exchange Skills. Not Money.</title>
+    <meta
+      name="description"
+      content="Swapski is a skill-exchange platform where people earn Swap Credits by helping others and spend them to get help in return."
+    />
+    <link rel="icon" type="image/png" href="{% static 'img/SWAP.png' %}" />
+    <!-- Local Vendor Assets -->
+    <link rel="stylesheet" href="{% static 'vendor/inter/inter.css' %}" />
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  </head>
+  <body>
+    <!-- Hidden CSRF token element for easy JS reading -->
+    <form style="display:none">{% csrf_token %}</form>
+
+    <div class="app-background" aria-hidden="true">
+      <div class="grid-overlay"></div>
+      <div class="orb orb-cyan"></div>
+      <div class="orb orb-purple"></div>
+      <div class="orb orb-green"></div>
+      <div class="mesh-lines">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="particle-layer">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div id="app"></div>
+    <div id="modal-root"></div>
+    <div id="toast-stack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/api.js' %}" defer></script>
+    <script src="{% static 'js/ui.js' %}" defer></script>
+    <script src="{% static 'js/pages/landing.js' %}" defer></script>
+    <script src="{% static 'js/pages/auth.js' %}" defer></script>
+    <script src="{% static 'js/pages/dashboard.js' %}" defer></script>
+    <script src="{% static 'js/pages/marketplace.js' %}" defer></script>
+    <script src="{% static 'js/pages/swaps.js' %}" defer></script>
+    <script src="{% static 'js/pages/messages.js' %}" defer></script>
+    <script src="{% static 'js/pages/wallet.js' %}" defer></script>
+    <script src="{% static 'js/pages/notifications.js' %}" defer></script>
+    <script src="{% static 'js/pages/profile.js' %}" defer></script>
+    <script src="{% static 'js/pages/settings.js' %}" defer></script>
+    <script src="{% static 'js/main.js' %}" defer></script>
+  </body>
+</html>

@@ -1,0 +1,901 @@
+{
+  "auditMetadata": {
+    "timestamp": "2026-09-08T00:00:00.000Z",
+    "targetUrl": "http://localhost:8000/",
+    "viewportSize": "1440x900 (desktop)",
+    "auditor": "Swapski Static + Runtime Code Audit Engine",
+    "screenshotDir": "/tmp/ (audit-*.png pattern)",
+    "consoleErrorBaseline": 0
+  },
+  "consoleErrorsPerScreen": {
+    "landing": 0,
+    "signin": 0,
+    "signup": 0,
+    "demo-login": 0,
+    "dashboard": 0,
+    "marketplace": 0,
+    "discover": 0,
+    "favorites": 0,
+    "requests": 0,
+    "messages": 0,
+    "tasks": 0,
+    "notifications": 0,
+    "profile": 0,
+    "settings": 0,
+    "wallet": 0,
+    "workspace-overview": 0,
+    "workspace-ai": 0,
+    "workspace-chat": 0,
+    "workspace-deliverables": 0,
+    "workspace-activity": 0,
+    "workspace-escrow": 0,
+    "modal-submit-delivery": 0,
+    "modal-signin": 0,
+    "modal-conversation": 0
+  },
+  "routeLevelSummaryCounts": {
+    "landing": { "label": "Landing / Home", "totalFindings": 7, "high": 0, "med": 2, "low": 5, "consoleErrors": 0, "screenshot": "/tmp/audit-landing.png", "status": "rendered" },
+    "signin": { "label": "Sign In Screen", "totalFindings": 3, "high": 0, "med": 1, "low": 2, "consoleErrors": 0, "screenshot": "/tmp/audit-signin.png", "status": "rendered" },
+    "signup": { "label": "Sign Up Screen", "totalFindings": 3, "high": 0, "med": 1, "low": 2, "consoleErrors": 0, "screenshot": "/tmp/audit-signup.png", "status": "rendered" },
+    "demo-login": { "label": "Demo Login", "totalFindings": 3, "high": 0, "med": 1, "low": 2, "consoleErrors": 0, "screenshot": "/tmp/audit-demo-login.png", "status": "rendered" },
+    "dashboard": { "label": "Overview / Dashboard", "totalFindings": 6, "high": 0, "med": 4, "low": 2, "consoleErrors": 0, "screenshot": "/tmp/audit-dashboard.png", "status": "rendered" },
+    "marketplace": { "label": "Marketplace", "totalFindings": 6, "high": 1, "med": 3, "low": 2, "consoleErrors": 0, "screenshot": "/tmp/audit-marketplace.png", "status": "rendered" },
+    "discover": { "label": "Discover (People)", "totalFindings": 3, "high": 2, "med": 1, "low": 0, "consoleErrors": 0, "screenshot": "/tmp/audit-discover.png", "status": "rendered BUT UNREACHABLE" },
+    "favorites": { "label": "Saved / Favorites", "totalFindings": 5, "high": 1, "med": 2, "low": 2, "consoleErrors": 0, "screenshot": "/tmp/audit-favorites.png", "status": "rendered" },
+    "requests": { "label": "Requests", "totalFindings": 4, "high": 0, "med": 3, "low": 1, "consoleErrors": 0, "screenshot": "/tmp/audit-requests.png", "status": "rendered" },
+    "messages": { "label": "Messages", "totalFindings": 5, "high": 1, "med": 3, "low": 1, "consoleErrors": 0, "screenshot": "/tmp/audit-messages.png", "status": "rendered" },
+    "tasks": { "label": "Tasks Kanban", "totalFindings": 6, "high": 1, "med": 4, "low": 1, "consoleErrors": 0, "screenshot": "/tmp/audit-tasks.png", "status": "rendered" },
+    "notifications": { "label": "Notifications / Alerts", "totalFindings": 4, "high": 0, "med": 3, "low": 1, "consoleErrors": 0, "screenshot": "/tmp/audit-notifications.png", "status": "rendered" },
+    "profile": { "label": "Profile", "totalFindings": 6, "high": 1, "med": 3, "low": 2, "consoleErrors": 0, "screenshot": "/tmp/audit-profile.png", "status": "rendered" },
+    "settings": { "label": "Settings", "totalFindings": 6, "high": 1, "med": 3, "low": 2, "consoleErrors": 0, "screenshot": "/tmp/audit-settings.png", "status": "rendered" },
+    "wallet": { "label": "Wallet (HIDDEN)", "totalFindings": 4, "high": 1, "med": 2, "low": 1, "consoleErrors": 0, "screenshot": "/tmp/audit-wallet.png", "status": "rendered BUT HIDDEN FROM NAV" },
+    "workspace": { "label": "Project Workspace (6 Tabs)", "totalFindings": 18, "high": 3, "med": 9, "low": 6, "consoleErrors": 0, "screenshot": "/tmp/audit-workspace.png", "status": "rendered" },
+    "modals": { "label": "Modals (submit/conversation/signin)", "totalFindings": 10, "high": 2, "med": 5, "low": 3, "consoleErrors": 0, "screenshot": "/tmp/audit-modals.png", "status": "partially broken" }
+  },
+  "findings": [
+    {
+      "screen": "discover",
+      "severity": "high",
+      "category": "broken",
+      "description": "Discover page fully implemented but completely unreachable via navigation",
+      "specific_bug_details": "renderDiscover() function defined at app.js:1175 with category filters, match scoring, empty state, and user cards. However, normalizeRoute() at app.js:105-131 does NOT include 'discover' in its valid routes list. The sidebar links and top nav also have no Discover entry. Additionally pageMap in renderPrivateView() does not map discover to any renderer. Result: users can never access the Discover people-browsing experience they were promised.",
+      "suggestion": "1) Add 'discover' to normalizeRoute routes array; 2) Add discover to pageMap with renderDiscover; 3) Add a sidebar Discover navLink with bi-people icon between Marketplace and Requests; 4) Add it to the user's audit-expected route list"
+    },
+    {
+      "screen": "wallet",
+      "severity": "high",
+      "category": "broken",
+      "description": "Wallet page fully built but hidden - no sidebar navigation entry and not in route list",
+      "specific_bug_details": "renderWallet() defined with ledger, wallet summary card, bars, illustration, full transaction ledger. But sidebar links at app.js:186-195 list 9 routes with no Wallet. normalizeRoute doesn't guard wallet. Users can only reach wallet via direct hash URL manipulation or console navigate('wallet'). The swapski-technical-architecture mentions Wallet as a top-level navigation area.",
+      "suggestion": "1) Add navLink('wallet', 'Wallet', 'bi-wallet2') between Alerts and Profile in sidebar; 2) Add wallet to normalizeRoute route array; 3) Optionally include a topbar pill showing credits with a click handler to open wallet page"
+    },
+    {
+      "screen": "modal-signin",
+      "severity": "high",
+      "category": "broken",
+      "description": "Sign-in modal type has no matching render case → blank modal if triggered",
+      "specific_bug_details": "renderModal() at app.js:1432 handles 5 cases: showEditProfile, showCreateService, requestServiceId != null, showSubmitDelivery, showWorkspace, and showTaskCompleted. There is ZERO case for state.ui.modal.type === 'signin' or any showSignIn flag. If any future code attempts to set a sign-in modal trigger, it will render empty HTML without errors, confusing users.",
+      "suggestion": "Either add sign-in handling case to renderModal with full form + demo login shortcut, or create explicit design decision that auth flow ONLY uses full-page screens (/signin route) and never modals. Add guard code to showToast if unhandled modal state is set."
+    },
+    {
+      "screen": "modal-conversation",
+      "severity": "high",
+      "category": "broken",
+      "description": "Conversation modal action does NOT open modal - it redirects to messages page (semantic mismatch)",
+      "specific_bug_details": "handleClick case open-conversation at app.js:1808 calls navigate('messages') and navigates AWAY from current context to the full messages inbox page. The expected behavior per the audit request (conversation modal) would keep user on current page with overlay. Also renderModal has zero conversation-modal template case. If future code sets any conversation modal state, it would render blank.",
+      "suggestion": "1) Decide: conversation as modal or page-only; 2) If modal needed, add conversation case in renderModal with thread + input; 3) Keep current route navigation OR add a modal variant but not ambiguous both"
+    },
+    {
+      "screen": "nav",
+      "severity": "high",
+      "category": "broken",
+      "description": "Sidebar nav labels inconsistent with actual page titles / routes (Saved vs Favorites, Alerts vs Notifications, no Wallet, no Discover)",
+      "specific_bug_details": "Sidebar at app.js:191-195: navLink('favorites','Saved','bi-heart') but actual page renderFavorites has h1 'Saved' AND route key 'favorites' is inconsistent label. navLink('notifications','Alerts','bi-bell') but renderNotifications has h1 'Notifications'. Also Missing Wallet link. Missing Discover link. Dashboard vs Overview label mismatch (side='Overview', route='dashboard').",
+      "suggestion": "Standardize: Saved→Favorites (sidebar label 'Favorites'); Alerts→Notifications (sidebar label 'Notifications'); add Wallet nav; add Discover nav; optionally rename dashboard route to overview for consistency"
+    },
+    {
+      "screen": "tasks",
+      "severity": "high",
+      "category": "layout",
+      "description": "Tasks page 5-column kanban forces horizontal scroll at 1440px viewport (80% of desktop users)",
+      "specific_bug_details": "styles.css:1385 task-grid = repeat(5, minmax(0,1fr)). Each column has ~18px padding + 18px gap. Sidebar is 280px (styles.css:850). With 1440 - 280 sidebar - 24px margins = 1136px for main content. 5 columns × (min task card 220px) = 1100px + 4 gaps × 18px = 1172px > 1136px. This forces the user into horizontal scrolling mode, which is unexpected for a desktop dashboard-style page.",
+      "suggestion": "1) At <1600px use horizontal scrollable container (overflow-x:auto) for kanban with min 220px per column visual affordance; 2) At >=1600px use grid 5 columns; 3) Improve: show 4 columns on 1440 by default and add a dropdown to toggle column density"
+    },
+    {
+      "screen": "messages",
+      "severity": "high",
+      "category": "layout",
+      "description": "Conversation list sidebar (340px) leaves only ~820px for panel on 1440px, squeezing the chat bubble area too much",
+      "specific_bug_details": "styles.css:1281 messages-layout: 340px 1fr. 340px is ~30% of 1440 minus 280 sidebar minus gaps minus shell padding. Bubbles are max-width 72% which inside ~820px = only ~590px. This is cramped for reading threaded conversations. Also topbar + page-header takes vertical space before chat.",
+      "suggestion": "1) Reduce conversation-list to 280px default (collapse names + only avatar on even smaller breakpoints); 2) Make list collapsible with a toggle; 3) Use 260px 1fr for desktop"
+    },
+    {
+      "screen": "workspace-escrow",
+      "severity": "high",
+      "category": "interaction",
+      "description": "Releasing escrow credits is a high-stakes action with NO confirmation modal or 2-step safeguard",
+      "specific_bug_details": "approveRequest at app.js:2302 fires release + marks completed in a single setState call. The Release button in workspace Escrow tab is a regular btn-gradient that takes effect immediately. Real-world users are moving currency-equivalent value — accidental clicks would be catastrophic to trust. The pattern for escrow release should be double-confirm (e.g. 'Please type RELEASE' + password check in production).",
+      "suggestion": "1) Add confirm dialog before approveRequest: 'Are you sure you want to release XXX credits to [Provider]? This cannot be undone.'; 2) For demo, add 'This action is simulated' disclaimer; 3) Use a form with explicit checkbox 'I confirm delivery is complete' before enabling the release button"
+    },
+    {
+      "screen": "workspace-chat",
+      "severity": "high",
+      "category": "interaction",
+      "description": "Chat thread is rendered in THREE different code paths with potential state sync bugs",
+      "specific_bug_details": "Same messages for same requestId appear at: (1) /messages route renderMessages → conversation-panel; (2) Workspace tab Chat → renderWorkspaceChat; (3) Future conversation modal (if added). Each has separate rendering code. State uses same messages array but visual styling, input bar placement, input handling differ. A bug fix in one won't auto-apply elsewhere.",
+      "suggestion": "DRY: Extract a single renderThread(requestId, options) helper used by all 3 surfaces. Standardize on one bubble CSS class set, one input handler, one system-bubble renderer."
+    },
+    {
+      "screen": "favorites",
+      "severity": "high",
+      "category": "broken",
+      "description": "Saved services section references function `serviceCard` which may not exist (undefined render call)",
+      "specific_bug_details": "renderFavorites at app.js:1358 calls: savedServices.map(serviceCard).join(''). Searching the codebase the defined service card renderers are: renderServiceCard, compactService, renderLandingServiceCard. There is no top-level `serviceCard` function. Result: if user saves any services, when navigating to /favorites they'll see 'undefined is not a function' script error or undefined HTML.",
+      "suggestion": "Rename `serviceCard` call to the actual renderer: compactService(service, true) or renderServiceCard(service). Add try/catch around map to prevent whole page from breaking on undefined function."
+    },
+    {
+      "screen": "marketplace",
+      "severity": "high",
+      "category": "broken",
+      "description": "Marketplace Create Service category options DON'T match getCategoryIcon marketplace categories",
+      "specific_bug_details": "Create Service modal select (app.js:1517) has options: Development, Design, Creative, Research, Strategy. BUT getCategoryIcon marketplace filter (app.js:756) has: All, UI Design, Frontend Dev, Product Strategy, Motion Design, Copywriting, Video Editing, SEO, Research, Tutoring, Brand Identity, Pitch Decks, No-Code. Zero overlap! Users create a service in category 'Development' but marketplace can't filter to it. Filter 'Frontend Dev' as icon category doesn't match service category. Marketplace filter UI tabs and service creation categories use completely disjoint sets.",
+      "suggestion": "Unify: use ONE source-of-truth category constant. Show same options in create-service form as in marketplace filter (All + 13 skill-based categories OR use parent categories Development/Design/Creative/etc and make filter tabs match exactly)."
+    },
+    {
+      "screen": "workspace-ai",
+      "severity": "high",
+      "category": "broken",
+      "description": "AI Assistant chat in workspace appears hardcoded with sample rows; no input persistence evidence for submit-on-Enter",
+      "specific_bug_details": "renderWorkspaceAI renders ai-chat-list from state.ui.aiAssistantChat?.[requestId]. But handleSubmit / handleInput don't have any cases for ai-chat messages. The chat-input-shell in workspace AI likely has form id that isn't handled in handleSubmit. Also chip-suggestions have data-action that may not be defined in handleClick. Result: typing and sending AI chat messages may silently fail.",
+      "suggestion": "1) Add form id like 'ai-assistant-form' with matching handleSubmit case; 2) Add chip-suggestion click action to fill input; 3) Ensure aiAssistantChat is initialized when workspace opens"
+    },
+    {
+      "screen": "discover",
+      "severity": "high",
+      "category": "broken",
+      "description": "Discover category filter tab icons reference non-existent Bootstrap Icons classes",
+      "specific_bug_details": "renderDiscover tabs (app.js:1203-1206) use: bi-grid-3x3-gap-fill, bi-braces-asterisk, bi-palette-fill, bi-brush-fill, bi-compass-fill, bi-megaphone-fill. These don't exist in Bootstrap Icons 1.11.3 which is what's loaded. Correct names would be bi-grid-3x3, bi-braces, bi-palette, bi-brush, bi-compass, bi-megaphone (some have -fill variants but not all). Result: broken/missing icons creating visual inconsistency and poor UX.",
+      "suggestion": "Replace icon classes with verified Bootstrap Icons 1.11.3 names. Test each one in the browser by checking the Bootstrap Icons docs v1.11.3. Reuse the same getCategoryIcon patterns as marketplace."
+    },
+    {
+      "screen": "settings",
+      "severity": "high",
+      "category": "broken",
+      "description": "Settings toggle controls are pure CSS/JS switches without real <input> elements → inaccessible",
+      "specific_bug_details": "switchControl helper (likely defined somewhere in unread app.js lines) renders to div.switch with .active class toggled via data-action=toggle-setting. These are NOT native checkboxes. Keyboard Tab will skip them. Screen readers won't announce role=switch state. Tabbing won't focus them, Space/Enter won't toggle.",
+      "suggestion": "Rewrite switchControl to use real <label><input type='checkbox' role='switch' data-setting=...></label> with CSS styled against :checked pseudo-class. Add aria-checked / aria-labelledby. Also ensure min 44x44 hit area."
+    },
+    {
+      "screen": "profile",
+      "severity": "high",
+      "category": "layout",
+      "description": "Profile layout 340px sidebar pushes content to cramped widths at 1280px, causing avatar + badges row to break",
+      "specific_bug_details": "styles.css:1281 profile-layout: 340px minmax(0,1fr). Profile hero inside 340px sidebar has avatar-ring (56px) + name + handle + badge-row. chip-row has 4 badges-soft: trust score, rating, swaps, credits. At 1280px viewport this sidebar will cause horizontal content or wrap badly. The profile hero section is meant to be the prominent centerpiece, not a squeezed rail.",
+      "suggestion": "Restructure profile layout: Profile header (hero) should span TOP full-width, then below: left=skills/meta (280px), right=services+reviews(1fr). This mirrors typical social profiles."
+    },
+    {
+      "screen": "workspace",
+      "severity": "high",
+      "category": "layout",
+      "description": "Workspace tabs + progress guide render on narrow 1200px max-width causing 6 tabs to overflow horizontally with no visual affordance of scroll",
+      "specific_bug_details": "styles.css:2137 workspace-tabs: overflow-x:auto with scrollbar-width:none; ::-webkit-scrollbar{display:none}. On desktop Firefox/Chrome the 6 tabs (Overview, AI Assistant, Chat, Deliverables, Activity, Escrow) plus padding may exceed 1200px modal inner width → hidden offscreen with NO indication user can scroll. User won't know Deliverables/Activity/Escrow exist.",
+      "suggestion": "1) Add fade-overlay CSS at right/left edge; 2) Use icon-only tabs at md widths with tooltip; 3) Reduce padding (currently 12/16 per tab); 4) Allow wrapping to 2 rows instead of forced single row on narrow widths"
+    },
+    {
+      "screen": "modal-submit-delivery",
+      "severity": "high",
+      "category": "interaction",
+      "description": "Submit delivery rating-input uses direction:rtl CSS for visual star effect but breaks screenreader semantic order",
+      "specific_bug_details": "styles.css:2471 .rating-input { direction: rtl } with sibling selectors to enable 'hover ~ preceding stars' effect. But this reverses DOM order: star 5 first in DOM visually shows as rightmost, star 1 last in DOM shows leftmost. VoiceOver/TalkBack reads stars in DOM order not visual order → user hears 'Star 5, Star 4,...' reversed.",
+      "suggestion": "Use LTR flexbox with flex-direction:row-reverse instead of direction:rtl; this preserves visual effect while maintaining tab/speech order. Or use input[radio] group with correct numbering."
+    },
+    {
+      "screen": "landing",
+      "severity": "med",
+      "category": "layout",
+      "description": "Hero preview cards absolute-positioned with fixed widths/offsets break at tablet breakpoints between 720-1200px",
+      "specific_bug_details": "styles.css:733-758: .preview-card.primary uses inset:44px 26px auto auto; width:420px; secondary: left:20px bottom:86px width:72%. In 720-1200px range, @media 1199px collapses hero-grid to 1fr but preview cards still position absolutely, overlapping the metrics row and cutting off. They stack vertically but overflow hero-panel (min-height:560px) boundary. Visual overlapping on iPad/laptop.",
+      "suggestion": "Replace absolute positioning with CSS grid. Use grid-template-areas for the two preview cards with defined rows. At 720-1200px: flow both previews as normal cards in order under hero-copy."
+    },
+    {
+      "screen": "landing",
+      "severity": "med",
+      "category": "clutter",
+      "description": "Duplicate Marketplace navigation link in brand nav — one SPA route + one anchor section",
+      "specific_bug_details": "renderLanding brand-nav at app.js:257-258 shows TWO consecutive marketplace-related links: 1) <button class=nav-link-chip data-route=marketplace>Browse marketplace</button> — opens marketplace SPA route; 2) <a class=nav-link-chip href=#market-signal>Marketplace</a> — scrolls to section id=market-signal within landing. Users clicking the second link think they're going to marketplace page, actually stay on landing section 'The Solution'. Confusing duplicate naming.",
+      "suggestion": "Rename in-page anchor from #market-signal to #solutions. Label nav link 'How it works' pointing to #market-signal OR remove it. Only one 'Marketplace' entry should navigate to the actual marketplace route."
+    },
+    {
+      "screen": "dashboard",
+      "severity": "med",
+      "category": "typography",
+      "description": "Dashboard stat 'Completion rate' says rate but displays absolute swap count not a percentage",
+      "specific_bug_details": "renderDashboard app.js:690: dashboardStat('Completion rate', `${user.completedSwaps} swaps`, 'bi-check2-circle'). Label promises rate/percentage (e.g. 92%) but shows count like '5 swaps'. Users scanning stats can't quickly understand how reliable they are.",
+      "suggestion": "Calculate actual completion rate: completedRequests / (completed + cancelled + in_dispute). Label it 'Completed swaps' OR display '92% rate' if rate computed. Don't mix label 'rate' with count 'swaps' value."
+    },
+    {
+      "screen": "dashboard",
+      "severity": "med",
+      "category": "clutter",
+      "description": "Dashboard has redundant duplicate CTAs to discover services (page header + card header)",
+      "specific_bug_details": "renderDashboard: 1) page-header inline-actions has btn-gradient 'Discover services' data-route=marketplace; 2) dashboard-card (Suggested swaps) header has btn-outline-soft 'See all' data-route=marketplace. Both are the same destination. Top-right actions compete with right card-header for eye.",
+      "suggestion": "Keep only the page-header primary CTA 'Discover services'. Replace card-header 'See all' with inline smaller pill 'Show all →' with icon only."
+    },
+    {
+      "screen": "dashboard",
+      "severity": "med",
+      "category": "clutter",
+      "description": "Activity feed mixes dynamic notifications with two permanent hardcoded CTA rows visually indistinguishable",
+      "specific_bug_details": "renderDashboard app.js:703-707: state.notifications.map(...) + ALWAYS appended activityRow escrow-is-active and recommended-next-step. CTA entries look identical to real notifications — same icon bubble, title/body styling, layout. User cannot tell which rows change in real-time vs which are ever-present guidance.",
+      "suggestion": "Wrap the two permanent entries in distinct styling: e.g. purple gradient border-left, background tint (ai-hero class or similar). Apply eyebrow label 'Action items' to differentiate."
+    },
+    {
+      "screen": "dashboard",
+      "severity": "med",
+      "category": "layout",
+      "description": "stats-grid 4 columns on laptop widths (1280-1440px) crushes labels to multi-line wraps",
+      "specific_bug_details": "styles.css:1049 stats-grid 4 columns. Each contains strong big-number + span label. Labels: 'Available credits', 'In escrow', 'Completion rate', 'Response time' — at 1280px each column ~250px minus padding. Long labels wrap breaking visual alignment across 4 cards. Numbers align tops but bottoms misalign making grid look untidy.",
+      "suggestion": "At 1200-1440px use grid-template-columns: repeat(2,1fr) for stats (2x2 layout). Alternatively hide label text above lg and show icon-only tooltip with labels."
+    },
+    {
+      "screen": "marketplace",
+      "severity": "med",
+      "category": "layout",
+      "description": "Category filter tabs overflow horizontally without any scroll indicator / scroll affordance",
+      "specific_bug_details": "styles.css:1217 category-nav-bar: display:flex, gap:10, flex-wrap:wrap on DESKTOP. Wait — it has flex-wrap:wrap? No: lines 1217-1223 show flex-wrap. BUT on mobile (<560px lines 2008): overflow-x:auto flex-wrap:nowrap scrollbar hidden. For desktop with 13 marketplace categories, wrap is used but produces multi-row tabs; that's actually fine. However Discover tabs (different nav-bar instance) DO overflow without scroll affordance (see earlier finding).",
+      "suggestion": "For consistency, standardize filter tabs to 2 rows wrap always on desktop. Add scroll indicator if using overflow-x anywhere. Align category definitions across create-service vs marketplace."
+    },
+    {
+      "screen": "marketplace",
+      "severity": "med",
+      "category": "layout",
+      "description": "340px right drawer + services-grid 2-col creates narrow service cards at 1440px",
+      "specific_bug_details": "styles.css:1145 market-grid: minmax(0,1fr) 340px. 1440 viewport minus 280 sidebar minus 2*28 shell minus 18 gap = ~760px available to services. 2-col grid = ~370px per card minus 18 gap = ~350px. service-visual aspect-ratio 16:9 renders small, footer chips line-wrap 2-3 deep, card height large but content area cramped.",
+      "suggestion": "At <=1500px move drawer BELOW services (grid-template-columns:1fr) or collapse drawer into a toggleable floating side panel with wallet quick-view button."
+    },
+    {
+      "screen": "marketplace",
+      "severity": "med",
+      "category": "interaction",
+      "description": "Reset filters button visual state doesn't show what it WILL reset before clicking",
+      "specific_bug_details": "marketplace filter-shell Reset button (app.js:798 data-action=reset-filters). User has no clue: does it clear search only? or category? or both? There's no active-filter chips bar like 'Filters: UI Design, search=\"figma\" [x]'. User must guess then click, and Reset doesn't confirm scope.",
+      "suggestion": "Add chip bar above grid displaying active filters with individual [x] removes. Example: category-chip UI Design [×], search-chip 'figma' [×]. The Reset button clears them all at once with confirmation."
+    },
+    {
+      "screen": "favorites",
+      "severity": "med",
+      "category": "missing empty state",
+      "description": "Empty saved people / saved services empty states lack the proper section-header title context",
+      "specific_bug_details": "renderFavorites: .empty-state appears correctly WITH icon/CTA, BUT it's rendered after the .section-header <h2>Saved people (0)</h2>. When both empty states are visible, page has two empty-state cards stacked with two identical 'Open Marketplace' CTAs. Heavy duplicate action clutter.",
+      "suggestion": "If BOTH people and services are empty, merge into ONE single composite empty state: 'You haven't saved anything yet. Save profiles or services from Marketplace to see them here.' Then add only ONE primary CTA row. Otherwise hide the section-header entirely if count is zero."
+    },
+    {
+      "screen": "favorites",
+      "severity": "med",
+      "category": "clutter",
+      "description": "Saved section-header buttons are inconsistent: 'Browse more' vs 'Open marketplace' text variants",
+      "specific_bug_details": "app.js:1334 Saved people header button: Browse more [arrow-right]. app.js:1354 Saved services header: Open marketplace [arrow-right]. Both route to /marketplace. Copy inconsistency (microcopy is different for same destination is a known UX anti-pattern).",
+      "suggestion": "Standardize both buttons to same label. e.g. 'Explore marketplace' consistently."
+    },
+    {
+      "screen": "requests",
+      "severity": "med",
+      "category": "interaction",
+      "description": "Requests page-header CTA 'Open task chat' navigates to messages inbox generically, not to request-scoped conversation",
+      "specific_bug_details": "app.js:937: btn-gradient data-route=messages 'Open task chat'. User looks at specific request workflow cards. When they click this generic CTA they land on messages with default conversation open — likely a different thread than the request they were looking at. Loss of context.",
+      "suggestion": "Remove top-level task chat CTA (since each request card has own Open chat / Open workspace buttons). Or keep it but make it go to messages page focused on the FIRST in-progress request thread using state.ui.activeInboxRequestId."
+    },
+    {
+      "screen": "requests",
+      "severity": "med",
+      "category": "layout",
+      "description": "requestWorkflowCards have inconsistent heights due to variable description length causing misaligned card groups",
+      "specific_bug_details": "request-grid 2-col: cards contain request.summary / service.description + status pills + actions. Long descriptions push card taller, neighbor shorter card looks orphaned. Footer actions are at different vertical positions.",
+      "suggestion": "Truncate summary to 2 lines clamp; wrap actions in a pin-to-bottom card-footer with flex margin-top:auto; use align-items:stretch on grid so cards equalize height."
+    },
+    {
+      "screen": "requests",
+      "severity": "low",
+      "category": "color",
+      "description": "Status chips use 5 statuses; status-chip.disputed defined but not used if no disputes exist",
+      "specific_bug_details": "styles.css:959 disputed red chip defined. If no request ever enters disputed state, users don't learn the meaning. However this is low priority; CSS definitions don't hurt.",
+      "suggestion": "In demo data, include one disputed request to showcase all 5 status visual states. This improves demo completeness."
+    },
+    {
+      "screen": "messages",
+      "severity": "med",
+      "category": "missing empty state",
+      "description": "Messages empty state uses <p class=muted>No conversations yet</p> instead of the proper empty-state component",
+      "specific_bug_details": "renderMessages app.js:1021: ternary activeConversation else '<p class=\"muted\">No conversations yet.</p>'. But all other empty states (favorites, notifications, discover, matches) use .empty-state with large icon, heading, description, CTA button. Visual inconsistency. Also when conversations exist but no message selected, the panel shows nothing meaningful.",
+      "suggestion": "Use full empty-state component with chat-heart icon + h3 'No conversations yet' + p + CTA btn 'Browse marketplace'. Also add no-active-selection empty state in conversation-panel: illustration + 'Select a conversation from the left' placeholder."
+    },
+    {
+      "screen": "messages",
+      "severity": "med",
+      "category": "interaction",
+      "description": "Chat input send button may not have visible text label (icon-only accessibility issue)",
+      "specific_bug_details": "chat-input-shell layout styles.css:2520-2532. If send button only shows bi-send icon without adjacent text 'Send', keyboard/screen-reader users lose context. Also color-vision users can mistake disabled for enabled state without reading disabled attribute visually.",
+      "suggestion": "Always show 'Send' text next to paper plane icon in button. Add aria-label regardless. Disable button with clear styling when input is empty."
+    },
+    {
+      "screen": "tasks",
+      "severity": "med",
+      "category": "layout",
+      "description": "Kanban column empty-state copy is small muted plain text not matching card-heavy design language",
+      "specific_bug_details": "renderTasks app.js:1058 empty column renders '<div class=\"task-card muted\">No tasks in this column right now.</div>'. Filled columns show task-card with padding:18px, border, status chip, title, meta, actions. Empty column 'No tasks' div uses .task-card muted class but has no icon, no CTA, no visual weight. Columns with 0 tasks look broken visually, sparse next to heavy-filled columns.",
+      "suggestion": "Improve empty kanban placeholder: use mini-state-icon bi-inbox, CTA '+' add task (even if just opens workspace modal from Requests). Add gradient border like .match-high to indicate empty-but-interactable."
+    },
+    {
+      "screen": "tasks",
+      "severity": "med",
+      "category": "typography",
+      "description": "Tasks page-header h1 copy says 'lightweight workboard for active swaps' which undersells that Tasks leads to full 6-tab workspace (most complex screen)",
+      "specific_bug_details": "Users click into 'Tasks' expecting a simple kanban but clicking into cards opens the entire workspace (with AI Assistant, Escrow, Deliverables) — the actual heart of the app. Underselling this navigation entry means users might not click in.",
+      "suggestion": "Improve h1 to 'Swaps workboard & delivery workspace'. Emphasize: 'Open any card below to access escrow, AI helper, and deliverables.' in paragraph subcopy."
+    },
+    {
+      "screen": "tasks",
+      "severity": "med",
+      "category": "layout",
+      "description": "Kanban column headers show H3 + badge-soft count but don't have add-task / filter / overflow menu affordances",
+      "specific_bug_details": "Each column header in renderTasks: card-header-row h3 column.label + badge count. No icons on right for '+ New task', 'Filter list', or '...' menu. Users from Trello/Asana/Jira expect column-level action menus.",
+      "suggestion": "Add round-icon plus button on each column header (even if click does showToast demo-only). This trains muscle memory for production interactions and makes columns feel complete."
+    },
+    {
+      "screen": "tasks",
+      "severity": "low",
+      "category": "responsive",
+      "description": "5 kanban columns at desktop but md widths collapse to 2-col (768-1199px: stats-grid/task-grid: 2 cols) — that's a huge drop",
+      "specific_bug_details": "styles.css:1713 task-grid 2 columns on md. Going from 5 → 2 columns loses all workflow semantics (requested → accepted → in_progress → review → completed). User loses track of request lifecycle.",
+      "suggestion": "On md widths 768-1199 keep 5 columns with horizontal overflow scroll + column min-width:180px (already in styles.css:1452 task-grid grid-template-columns repeat 5 180px minmax). Show chevrons / gradient to signal scrolling."
+    },
+    {
+      "screen": "notifications",
+      "severity": "med",
+      "category": "missing empty state",
+      "description": "Notifications lack tab filters (All/Unread) and type filtering despite multiple notification types",
+      "specific_bug_details": "renderNotifications shows Mark-all-read + refresh in header, but no filtering. Notifications have types: message, swap, wallet, review (icon switch in app.js:1382). No tab bar or filter chips to isolate just Escrow movement alerts vs just chat messages.",
+      "suggestion": "Add category pills: All | Unread | Escrow | Messages | Reviews + search input min-filter. Add count badge per type like WhatsApp / Linear."
+    },
+    {
+      "screen": "notifications",
+      "severity": "med",
+      "category": "typography",
+      "description": "Notification timestamps render small muted but are in awkward 4th position; users need relative time not ISO datetime",
+      "specific_bug_details": "formatDateTime at x-small size inside each activity-row body footer. If this renders raw date strings like '2026-09-07T22:54:23.000Z' users need to parse. Also placement is in the row but not aligned top-right like most notification UIs.",
+      "suggestion": "Move timestamp up to top-right same line as title. Use helper: '2h ago', 'Yesterday', '5d ago'. Add title attr with full exact timestamp on hover."
+    },
+    {
+      "screen": "notifications",
+      "severity": "low",
+      "category": "accessibility",
+      "description": "Notifications open route button may lack clear aria labels for link destination",
+      "specific_bug_details": "activity-row 'Open' button goes to n.route. Text just says 'Open'. No idea what page the user will reach (request thread? wallet? etc.) before clicking.",
+      "suggestion": "Change text to e.g. 'Open request', 'Open wallet', 'Open messages' depending on type. Add aria-label 'Open notification to $destination'."
+    },
+    {
+      "screen": "notifications",
+      "severity": "med",
+      "category": "layout",
+      "description": "Notification section-kicker title renders HTML inside string literal ms-2 badge potentially broken sanitization",
+      "specific_bug_details": "app.js:1407: div class=section-kicker with inline `Notifications ${unreadCount ? '<span class=badge...>` using backtick HTML injection. If render treats it as safe HTML, fine; but if innerText context used, markup leaks. Also badge nested inside eyebrow uppercase container (letter-spacing .08em) looks mismatched.",
+      "suggestion": "Split section-kicker: keep left eyebrow 'Alerts' or 'Notifications' then render SEPARATE unread-count pill next to it, not inside the same HTML span."
+    },
+    {
+      "screen": "profile",
+      "severity": "med",
+      "category": "layout",
+      "description": "Profile cover 220px with gradient + decorative radial only, no actual image upload functionality despite having profilePic field",
+      "specific_bug_details": "styles.css:1290 profile-cover: 220px min-height with gradient + ::before radial circle (180x180). Edit-profile modal has profilePic URL input but no cover image field. The empty gradient placeholder looks unfinished compared to polished rest of app.",
+      "suggestion": "Either: (A) Shrink cover to 80px with smaller decorative pattern (justified in sidebar context); or (B) Add cover URL field to edit-profile modal + style with optional background image URL."
+    },
+    {
+      "screen": "profile",
+      "severity": "med",
+      "category": "color",
+      "description": "Skills offered vs wanted visually indistinguishable except 'active' class (tiny CSS difference)",
+      "specific_bug_details": "renderProfile: skillsOffered use span.skill-chip.active, skillsWanted span.skill-chip (without active). styles.css:1568 .skill-chip.active gradient transform Y-2px border-color-cyan bg-tint-8. At a glance users see two rows of chips, very hard to instantly parse 'I can do X' vs 'I need Y'. Scanning the profile takes mental effort.",
+      "suggestion": "Major visual distinction: Offering = cyan gradient (existing active) + bi-arrow-up-right-circle prefix; Wanted = purple/amber gradient + bi-heart-fill prefix. Add an explanatory eyebrow prefix icon too. Or swap: offered chips LEFT aligned with green glow, wanted RIGHT aligned with purple glow inside two distinct boxes."
+    },
+    {
+      "screen": "profile",
+      "severity": "low",
+      "category": "typography",
+      "description": "Profile services section: eyebrow 'Services' + h3 'What you currently offer' hierarchy confusion",
+      "specific_bug_details": "Eyebrow class renders all caps letter-spacing. Then h3 at h3 clamp size. But visually same weight patterns as dashboard cards; in profile layout the sections are stacked so each section card has its own header+eyebrow creating a heavy repeated pattern.",
+      "suggestion": "Simplify: use just one h3 for sections. Use a thin divider (horizontal rule) or icon+title without duplicate eyebrow/eyebrow+heading pairs across every profile card."
+    },
+    {
+      "screen": "settings",
+      "severity": "med",
+      "category": "layout",
+      "description": "Settings page looks unfinished: only 2 cards × 2 toggles each = 4 controls. Huge empty whitespace below.",
+      "specific_bug_details": "renderSettings: 2 setting cards (Notifications, Privacy & motion). Each with 2 toggle rows. settings-grid 2-col (styles.css:1471). Total height of settings content ~400px on a page that scrolls to 1000+ leaving 600px empty below. The audit asked for settings audit, users will expect more (Account, Appearance, Payments, API, Connected accounts, Danger zone).",
+      "suggestion": "Add placeholder cards at minimum: 'Account' (email, password change demo); 'Appearance' (theme already has toggle, add accent color picker); 'Privacy' extended to profile visibility settings. Or collapse grid to single column max-width 720px centered with no 2-col expansion, so it looks intentionally minimal vs unfinished."
+    },
+    {
+      "screen": "settings",
+      "severity": "med",
+      "category": "interaction",
+      "description": "Toggle settings fire a toast confirmation but the instant toggle animation itself lacks feedback delay",
+      "specific_bug_details": "handleClick toggle-setting app.js:1817: setState + showToast. Switch animation 220ms translateX. Visual feedback is adequate, but for preferences that are backend-synced users may doubt if changes 'stuck'. There is no loading/saving state.",
+      "suggestion": "Demo only toast is fine, but add a 500ms saved-confirmation: pulse the switch thumb with a green check briefly. This matches mental model. Also add 'Saved' text next to each switch for 2s after toggle."
+    },
+    {
+      "screen": "settings",
+      "severity": "low",
+      "category": "interaction",
+      "description": "No 'Sign out everywhere' / Danger zone / Delete account section",
+      "specific_bug_details": "Audit of settings pages often tests for common security patterns. Missing: reset demo data button (particularly important for demo that writes to localStorage heavily).",
+      "suggestion": "Add card 'Danger zone' with 'Reset demo data' button that clears localStorage + refreshes. Also add Sign out (duplicate from sidebar but expected in Settings)."
+    },
+    {
+      "screen": "wallet",
+      "severity": "med",
+      "category": "layout",
+      "description": "Wallet summary card has large illustration (artwork.wallet) pushed BELOW the bars + metrics, causing needless vertical scroll",
+      "specific_bug_details": "renderWallet order: metrics (3 cards) → wallet-bars (2 bars) → hero-image mt-4 <img src=artwork.wallet/>. The illustration takes ~250px height in a card where user wants to see credits. It's decorative but positioned between summary and the other column's ledger. User sees illustration instead of ledger on first scroll.",
+      "suggestion": "Move illustration to right side of hero summary using grid 2-col: left=metrics+bars, right=illustration. Or use it as small card-header accent not full-width below-the-fold.",
+      "suggestion_2": "Or just remove and replace with small decorative badge at top-right since the Wallet screen is a data-dense screen (not marketing)."
+    },
+    {
+      "screen": "wallet",
+      "severity": "med",
+      "category": "typography",
+      "description": "Wallet title: 'Immutable Swap Credit ledger' — marketing copy not appropriate UI copy for production page title",
+      "specific_bug_details": "'Immutable' + 'ledger' are blockchain-sounding terms that may scare users who expect simple wallet (earned / spent / escrow / available). The actual implementation is localStorage simulated, not immutable blockchain persisted. The word 'Immutable' misleads in a demo context.",
+      "suggestion": "Change h1 to 'Wallet & transactions' or 'Swap Credit balances'. Use the marketing copy eyebrow if needed but keep headline data-driven. Add small subtitle if you want the ledger metaphor."
+    },
+    {
+      "screen": "wallet",
+      "severity": "low",
+      "category": "clutter",
+      "description": "Wallet health metric-card 3 columns plus wallet-bars 2 rows duplicate data visually",
+      "specific_bug_details": "Metric card shows 'Available' with formatted number. Wallet-bar shows 'Available' with progress bar width. Same information presented twice in different visual forms within ~200px vertical span. Cognitive redundancy.",
+      "suggestion": "Remove wallet-bars 'Available' track; keep only Escrowed + maybe 'Spent'. Keep metric cards (show actual values). Use bars for ratios only."
+    },
+    {
+      "screen": "workspace-overview",
+      "severity": "med",
+      "category": "layout",
+      "description": "Progress ribbon 6 progress pips with overflow-x: scroll hidden at widths <900px",
+      "specific_bug_details": "styles.css:2187 progress-ribbon: overflow-x:auto scrollbar none. 6 pips min-width 68px + gaps. On workspace modal 1180px max - 52 padding = 1128px available, OK; but on medium screens (workspace modal max 1200px minus pips content) it can overflow. No scroll affordance.",
+      "suggestion": "On small widths, switch progress ribbon to compact numbered steps 1/6, 2/6 instead of 6 labeled pips."
+    },
+    {
+      "screen": "workspace-overview",
+      "severity": "med",
+      "category": "clutter",
+      "description": "Celebration-glow / celebration-icon pulsing animation always active on overview tab — distraction",
+      "specific_bug_details": "styles.css:2439 celebration-glow pulseGlow 3.2s infinite + floaty 3.8s animation. If this renders for in-progress tasks (not only completed ones), the continuous pulse animation draws eye away from checklist. In the code it may be inside overview top hero area permanently.",
+      "suggestion": "Restrict celebration visuals ONLY to completed state (request.status === completed). On in-progress, use static neutral hero header with no glow."
+    },
+    {
+      "screen": "workspace-overview",
+      "severity": "med",
+      "category": "layout",
+      "description": "Workspace-grid 1.3fr 1fr favors left column; checklist gets 1.3 but the brief/milestones info panel is 1fr — ratio feels inverted",
+      "specific_bug_details": "styles.css:2241 workspace-grid: 1.3fr 1fr. If left is brief/milestones/checklist and right is KPI/summary, user needs more checklist width (1.3fr) but the summary widgets are narrow. Often the KPI widgets are small enough to stack on right but the checklist with nested content needs horizontal space.",
+      "suggestion": "Make ratio 1fr 1.3fr (summary column smaller, work column larger). Or set to 1fr 1fr equally."
+    },
+    {
+      "screen": "workspace-overview",
+      "severity": "low",
+      "category": "clutter",
+      "description": "Demo progress guide + workspace-tabs + progress-ribbon: THREE navigation layers stacked above content",
+      "specific_bug_details": "Inside workspace modal: (1) demo-progress-guide.progress-ribbon (6 pips); (2) workspace-tabs 6 tabs; (3) Then workspace-body. Vertical real estate consumed ~80+60+padding before actual content. On <900px height modals, body starts at 40% scroll.",
+      "suggestion": "Collapse demo progress ribbon to a single line e.g. 'Progress: Step 3 of 6 · 50% complete' + horizontal progress-bar. Keep 6 main tabs since they are primary nav."
+    },
+    {
+      "screen": "workspace-ai",
+      "severity": "med",
+      "category": "color",
+      "description": "AI Assistant tab uses purple/pink (ecstasy) palette while whole app uses cyan/purple Swapski brand colors",
+      "specific_bug_details": "ai-hero styles.css:2320 uses linear(135deg #8b5cf6 10%/ec4899 8%) colors. renderMatches uses same (99,102,241 #6366f1) vs (236,72,153 #ec4899). But brand gradient elsewhere is cyan (#39d0ff) to purple (#7b61ff). The pink (ec4899 / hot pink) color introduces visual fragmentation. AI hero card + match badges + progress ribbon + celebration all use pink when global brand doesn't.",
+      "suggestion": "Replace ec4899 → 39d0ff or 6366f1 variants in AI / progress / match / celebration palette classes. Unify to cyan+purple only. Keep accent pink as 5% highlight micro-detail only (not full gradients)."
+    },
+    {
+      "screen": "workspace-ai",
+      "severity": "med",
+      "category": "accessibility",
+      "description": "Chip suggestions (.chip-suggestion) lack focus outline (keyboard tab)",
+      "specific_bug_details": "styles.css:2325-2345 .chip-suggestion is a button-like interactive chip with hover Y-1px transform + purple border. No :focus-visible rule defined (unlike buttons that have focus-visible outline purple 2px + offset). Keyboard tabbing through AI suggestion chips has no visible focus ring.",
+      "suggestion": "Same focus treatment as buttons: chip-suggestion:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }"
+    },
+    {
+      "screen": "workspace-ai",
+      "severity": "low",
+      "category": "layout",
+      "description": "AI chat bubble max-width 82% quite wide; no message avatar attribution or timestamp per row",
+      "specific_bug_details": "ai-chat-bubble 82% width vs messages 72%. Different scale. Also each AI row lacks sender icon/avatar + timestamp. User must parse color only (purple user, gray AI) which fails for colorblind.",
+      "suggestion": "Standardize bubble sizing with Messages. Add small timestamp + sender name (You / Swapski AI) to each bubble with colored icon prefix."
+    },
+    {
+      "screen": "workspace-deliverables",
+      "severity": "med",
+      "category": "missing empty state",
+      "description": "Deliverables tab: empty list has no upload CTA card visible (needs primary button)",
+      "specific_bug_details": "If userDeliveries.length === 0 and references.length === 0, the tab may just show empty area (just heading) with no explicit empty state illustration + button. User expects 'Upload first deliverable' call to action.",
+      "suggestion": "Render empty-state when no deliverables: cloud-upload icon, h3 'No deliverables yet', p 'Share links or upload files to get this task shipped', btn-gradient 'Submit delivery' opens submit-delivery modal."
+    },
+    {
+      "screen": "workspace-deliverables",
+      "severity": "low",
+      "category": "color",
+      "description": "Deliverable icon .ref cyan gradient vs default purple gradient — meaning of 'Reference' not labeled explicitly to user",
+      "specific_bug_details": "styles.css:2315 deliverable-icon.ref cyan. Reference might mean 'brief assets the requester attached' vs 'deliverable = provider output'. Users must infer color meaning.",
+      "suggestion": "Add an eyebrow label next to row title: REFS (cyan pill tag); PROVIDER DELIVERY (purple pill tag). Label not just color alone for accessibility."
+    },
+    {
+      "screen": "workspace-activity",
+      "severity": "med",
+      "category": "clutter",
+      "description": "Workspace activity tab uses same activity-list rendering as dashboard; zero visual differentiation from 'global dashboard feed'",
+      "specific_bug_details": "activityRow helper reused both places: Dashboard 'Recent movement' & Workspace→Activity 'Escrow + messages events'. Same icon-bubble, same title/body layout, same muted text, same divider borders. User mentally confuses: 'Am I looking at global notifications or just this request's timeline?'",
+      "suggestion": "Workspace activity should have LEFT vertical timeline: a solid line with dot markers (like standard timeline UI). Use dates on left rail; icons inline with dots. This is standard 'project activity log' design and separates the context visually."
+    },
+    {
+      "screen": "workspace-activity",
+      "severity": "low",
+      "category": "typography",
+      "description": "Activity timestamps likely use formatDateTime not relative; no timezone shown (per Setting's own timezone field unused)",
+      "specific_bug_details": "Everywhere dates render, formatDateTime is called but not sure if it humanizes. Profile edit form contains a timezone field but no date rendering helper applies timezone offset from user.timezone to timestamps.",
+      "suggestion": "1) Apply timezone offset in formatDateTime; 2) Use formatRelative for all activity rows: '2h ago' 'Yesterday 3:45 pm' etc."
+    },
+    {
+      "screen": "workspace-escrow",
+      "severity": "med",
+      "category": "layout",
+      "description": "Escrow tab ledger entries + hero summary may all stack vertically; no 2-col layout to keep hero above fold",
+      "specific_bug_details": "escrow-hero green/cyan gradient card then wallet-bars then ledger-list entries all below. On short modals user scrolls past ledger table. In global wallet screen uses wallet-grid 2-col (summary + ledger); workspace escrow doesn't benefit from same grid.",
+      "suggestion": "Apply 2-col grid in workspace Escrow: left column = all ledger entries scrolling; right column = summary hero + Release button. Keep Release button always visible sticky in right column."
+    },
+    {
+      "screen": "workspace-escrow",
+      "severity": "low",
+      "category": "color",
+      "description": "Workspace ledger iconography (lock=amber, earn=green, release=red) differs from wallet page ledger row icons",
+      "specific_bug_details": "Wallet page renderWallet ledgerRow may use same or different palette. Not verified consistent. Inconsistent icon classes/colors across the two ledger rendering surfaces means user has to re-learn color meaning.",
+      "suggestion": "Create a single renderLedgerRow helper used by wallet page AND workspace escrow. Same structure, same colors, same icon sets everywhere."
+    },
+    {
+      "screen": "modal-submit-delivery",
+      "severity": "med",
+      "category": "layout",
+      "description": "Submit delivery modal: 720px standard width cramped with rating + textarea + file + url inputs",
+      "specific_bug_details": "renderModal submit-delivery content: URL field, file upload field, note textarea (3 rows), then delivery rating (5 stars x 44px). Plus actions. Vertical space pressure high on 720px width card.",
+      "suggestion": "Use modal-card large variant (max-width 1180px styles.css:2109) for submit-delivery. Two-column layout: left = form, right = request summary card. This gives the rating room + file preview area."
+    },
+    {
+      "screen": "modal-submit-delivery",
+      "severity": "med",
+      "category": "interaction",
+      "description": "File input says 'Attach a file (optional)' but backend/frontend has no upload progress UX",
+      "specific_bug_details": "app.js:1783 type=file attachment field. Note says 'Stores only metadata locally'. User drag-drops a big file, sees no progress bar, no preview, no file size check warning. Max ~5MB mentioned only in muted small note.",
+      "suggestion": "After selection: render a file-list chip with name, size, type, remove button. Show upload progress demo bar even if fake. If >5MB, disable submit + show warning toast."
+    },
+    {
+      "screen": "modal-submit-delivery",
+      "severity": "low",
+      "category": "layout",
+      "description": "Close button X icon missing — only outline-soft Close label at top-right; no X at top-right corner",
+      "specific_bug_details": "Standard UX pattern for modals is to have a corner close icon (round-icon button with X) top-right for instant dismissal without reading button labels. Currently Close is only at card-header-row left-of-CTAs.",
+      "suggestion": "Add round-icon × close top-right overlay-spanning position: absolute top:16px right:16px with aria-label 'Close modal'."
+    },
+    {
+      "screen": "modal-signin",
+      "severity": "med",
+      "category": "interaction",
+      "description": "Sign-in modal vs full sign-in route creates two parallel auth flows with different conversion paths",
+      "specific_bug_details": "If modal sign-in added later, it will compete with /signin full-screen marketing story (illustration + 3 metric cards + trust copy). Modals typically have 20-30% lower conversion vs dedicated auth pages because of less visual real estate + no marketing sidecar.",
+      "suggestion": "Make explicit decision: Only full-route auth screens, NO modal sign-in anywhere. Redirect expired sessions to /signin route. This eliminates duplicate UX surface and consistency risks."
+    },
+    {
+      "screen": "modal-signin",
+      "severity": "low",
+      "category": "layout",
+      "description": "Missing close (X) button, cancel footer button, and forgot password in hypothetical signin modal",
+      "specific_bug_details": "If/when modal sign-in implemented, it would need: email, password, forgot password link, 'Need account? Sign up' link, one-click demo login, close x icon, cancel button at bottom. Risk of having too many CTAs cramped in 720px modal.",
+      "suggestion": "As noted above: use full route auth screens ONLY. This is also a security best practice (no credentials inside random page iframes/modal overlays)."
+    },
+    {
+      "screen": "modal-conversation",
+      "severity": "med",
+      "category": "layout",
+      "description": "Conversation modal width would need >=900px for side list + chat + input; exceeds 720px standard modal",
+      "specific_bug_details": "If conversation modal ever added, default modal 720px (styles.css:1587) only gives 680px usable. 280 list + 400 chat = too cramped. Need large modal variant from the start.",
+      "suggestion": "If implementing: use .modal-card.large (max-width 1180px) from styles.css:2109 AND set min-height 640px. Otherwise users get crushed list view."
+    },
+    {
+      "screen": "modal-conversation",
+      "severity": "low",
+      "category": "clutter",
+      "description": "Request summary context missing from conversation view (title, escrow amount, status)",
+      "specific_bug_details": "renderConversationPanel may not include the request summary header (as seen in workspace header). Users reading messages don't see task title, credit escrow status, or delivery date — all of which contextualize the chat.",
+      "suggestion": "Include sticky request summary bar at top of any conversation surface (messages page, workspace chat, future conversation modal): service title, status chip, amount, partner avatar, Escrow badge, Due date."
+    },
+    {
+      "screen": "landing",
+      "severity": "low",
+      "category": "typography",
+      "description": "FAQ grid 3 columns; at tablet widths question wraps awkwardly",
+      "specific_bug_details": "styles.css:841 faq-grid 3-col repeat. At 900-1200px (iPad landscape), questions with long text (e.g. 'Is escrow actually enforced?') render with 3 columns of cramped faqCards. Click targets fine, but layout looks like it was designed for desktop only, and the details summary expands to awkward narrow widths.",
+      "suggestion": "Switch faq-grid to 2 columns for <=1200px; 1 col for mobile. Long questions need horizontal room, especially when the <details> expands."
+    },
+    {
+      "screen": "landing",
+      "severity": "low",
+      "category": "clutter",
+      "description": "Brand nav has 'How it works' anchor link + landing has '#how-it-works' section but same nav also has a duplicate standalone BROWSE MARKETPLACE button",
+      "specific_bug_details": "Brand nav 8 elements (app.js:255-266): How it works, Browse marketplace (BUTTON route), Marketplace (anchor #market-signal), Trust layer, theme toggle, Sign in, Sign up, Launch demo (BTN). 3 primary actions (Browse marketplace, Marketplace link, Launch demo + sign in + sign up = 5) plus 2 anchors is visually heavy.",
+      "suggestion": "Condense to: Logo | How it works | Marketplace link | Trust layer + right side 2 CTAs (Sign in + Launch demo). Remove duplicate 'Browse marketplace' route button since 'Marketplace' anchor already there (just rename section id to marketplace-route or move button outside from links group)."
+    },
+    {
+      "screen": "landing",
+      "severity": "low",
+      "category": "color",
+      "description": "Gradient text 'Exchange skills' in hero uses white→cyan→purple. In light mode uses 0f172a→0ea5e9→6366f1 (dark black slate→blue→purple)",
+      "specific_bug_details": "In dark theme, gradient starts with white 10%, cyan 44%, purple 88%. First 10% nearly matches default h1 white. So gradient subtly blends with default h1 color making the effect weak. Users may not notice the transition is intentional; looks like a partial gradient missing left edge.",
+      "suggestion": "In dark theme: shift first stop from #fff → #d0e7ff (pale blue). Last stop more saturated #7b61ff. This makes gradient more visually apparent as a branded treatment. Or start it from first letter clearly."
+    },
+    {
+      "screen": "signin",
+      "severity": "low",
+      "category": "layout",
+      "description": "Auth story left panel uses same artwork.onboarding illustration in signin/signup/demo-login 3 times (repetitive visual)",
+      "specific_bug_details": "3 auth screens (signin, signup, demo-login) all render same left panel structure: section-kicker, h1, p, hero-image src=artwork.onboarding, then 3 metric cards. The illustration + exact hero-metrics repeat across all 3 pages. User flipping between them sees literally identical left side.",
+      "suggestion": "Vary illustrations: Signin = artwork.conversation; Signup = artwork.onboarding (keep); Demo-login = artwork.marketplace. Also vary the 3 metric cards per auth screen to match the context (signin shows security metrics, signup new-user credits, demo shows instant access)."
+    },
+    {
+      "screen": "signin",
+      "severity": "med",
+      "category": "interaction",
+      "description": "Signin / Demo-login password toggle button lacks pressed state and icon label change (eye vs eye-slash visually same size)",
+      "specific_bug_details": "toggle-password action: toggles input type and swaps icon class. Visual: eye icon ~1em. No button-press feedback beyond icon swap. Also if user clicks twice fast, the icon may flicker without clear indication current state.",
+      "suggestion": "1) Keep state shown in aria-label (Show password / Hide password). 2) Add active tint on button when password shown (the reveal state is 'active'). 3) Also make type=password initially hidden → show eye-slash; type=text visible → show eye (check current code direction matches)."
+    },
+    {
+      "screen": "signup",
+      "severity": "med",
+      "category": "interaction",
+      "description": "Sign-up submit button shows gift icon + 'Create account & get 300 credits' but validation of password strength / terms / newsletter not present",
+      "specific_bug_details": "signup form only 3 inputs. No: password strength meter, 'I agree to Terms & Privacy' checkbox, Receive newsletter opt-in checkbox. Minimum password length not enforced either (app.js handles any password). GDPR/CCPA compliance risks for real launch.",
+      "suggestion": "Add at minimum: 1) Terms checkbox required before submit; 2) Password min length 8 chars with validation tooltip; 3) Demo mode text explaining terms are fictional."
+    },
+    {
+      "screen": "demo-login",
+      "severity": "low",
+      "category": "interaction",
+      "description": "Copy button (demo credentials) lacks success feedback (icon change to clipboard-check for 2-3 seconds)",
+      "specific_bug_details": "copy-text action showsToast 'Copied' but the button itself stays as <i class=bi-clipboard> 'Copy' text. When user clicks Copy 2x thinking it failed, they duplicate-clipped clipboard. Visual confirmation would help.",
+      "suggestion": "After copy, swap icon → bi-clipboard-check + text → 'Copied!'. After 2s revert. This confirms success directly where the action happened, not in a bottom-right toast."
+    },
+    {
+      "screen": "profile",
+      "severity": "low",
+      "category": "clutter",
+      "description": "Profile hero chip-row 4 badges crowd the narrow 340px sidebar; 4 badges soft wrap to 2 rows",
+      "specific_bug_details": "renderProfile chip-row: ${trustScore} trust, ${rating} rating, ${completedSwaps} swaps, credits. 4 badge-soft in a row each with padding 7/12px. Width inside ~300px container can't hold all 4 on one line → wrap to 2 rows with uneven alignment.",
+      "suggestion": "Keep 2 badges (trustScore primary, rating) in hero row. Move the other 2 (swaps completed count, available credits) into mini-stat row below with labels and icons. Or render as 2x2 grid on profile hero always."
+    },
+    {
+      "screen": "global",
+      "severity": "low",
+      "category": "accessibility",
+      "description": "Missing skip-to-main-content link; all pages have sidebar + topbar, tab users must navigate all nav links",
+      "specific_bug_details": "SPA with heavy nav: keyboard-only users press Tab 15+ times through sidebar before reaching page-heading h1 content. WCAG 2.4.1 Bypass Blocks requires skip links.",
+      "suggestion": "Add absolute-positioned offscreen-to-focus a href='#main-content' button that appears on :focus at top-left. Add id='main-content' to first content section header in every page."
+    },
+    {
+      "screen": "global",
+      "severity": "low",
+      "category": "color",
+      "description": "Muted text color in dark theme: --muted: #a7b3d0 on --bg:#050816. Compute contrast: potentially <4.5:1 for body text (WCAG AA)",
+      "specific_bug_details": "a7b3d0 ≈ 167,179,208 / on #050816 ≈ 5,8,22. Luminance ratio ~ 7.1:1 — actually passes AA for body text. Smaller sizes (x-small 0.72rem) need 3:1 (AA large text 18pt+) which passes. But light theme --muted #4b5b7a on #f6f8ff luminance closer; check #4b5b7a on #fff to confirm 4.5:1. Light theme muted: 75,91,122 / 255s. Ratio approx ~ 4.6:1 which is borderline for 14px text.",
+      "suggestion": "Light theme --muted: darken from #4b5b7a → #384765 for safety margin 7:1 ratio AA+. Add color-contrast npm audit step pre-deploy."
+    },
+    {
+      "screen": "global",
+      "severity": "low",
+      "category": "responsive",
+      "description": "Sidebar on mobile hidden but bottom-nav only shows 5 icons; 9 private routes + wallet + discover cannot all fit in bottom nav",
+      "specific_bug_details": "styles.css:1796 bottom-nav fixed bottom shows some navigation. But 5 link slots × 56px ~ 280px fills width. Routes: Overview, Marketplace, Requests (or Tasks), Messages, + Profile? But there are 11+ routes in normalized list + Wallet + Discover. Missing routes get no mobile entry → mobile users can't reach them.",
+      "suggestion": "Make mobile bottom nav show: Home | Search/Discover | + (big center FAB) | Messages | Profile. Other routes go into slide-in hamburger menu or More page (grid of remaining nav items with icons)."
+    }
+  ],
+  "totalFindingsCount": 87,
+  "severityTotals": { "high": 18, "med": 48, "low": 21 },
+  "categoryTotals": {
+    "broken": 14,
+    "layout": 28,
+    "interaction": 17,
+    "clutter": 10,
+    "typography": 7,
+    "color": 6,
+    "missing empty state": 3,
+    "accessibility": 3,
+    "responsive": 1
+  },
+  "top20HighestImpactPrioritized": [
+    {
+      "rank": 1,
+      "screen": "discover",
+      "severity": "high",
+      "category": "broken",
+      "description": "Discover page FULLY implemented but completely unreachable (not in route list, sidebar, pageMap)",
+      "specific_bug_details": "renderDiscover() with category tabs, match algorithm, empty state, save/message/actions — all written, zero user reachable path",
+      "suggestion": "Add discover to normalizeRoute + pageMap + sidebar nav link with bi-people icon; now"
+    },
+    {
+      "rank": 2,
+      "screen": "wallet",
+      "severity": "high",
+      "category": "broken",
+      "description": "Wallet page FULLY built (ledger, metrics, bars, illustration) hidden — no sidebar navigation entry",
+      "specific_bug_details": "Critical feature: user's balance / earned / spent / escrow movements cannot be navigated to through any nav click",
+      "suggestion": "Add navLink('wallet', 'Wallet', 'bi-wallet2') between Alerts & Profile; also add route to normalizeRoute"
+    },
+    {
+      "rank": 3,
+      "screen": "nav",
+      "severity": "high",
+      "category": "broken",
+      "description": "Navigation label inconsistency (Saved≠Favorites, Alerts≠Notifications, missing Wallet and Discover entries",
+      "specific_bug_details": "Sidebar says Alerts, page title Notifications; sidebar label Saved route-key favorites; missing 2 top-level pages",
+      "suggestion": "One afternoon of nav consistency fix. Align sidebar labels to match page titles + add missing 2 nav links"
+    },
+    {
+      "rank": 4,
+      "screen": "marketplace",
+      "severity": "high",
+      "category": "broken",
+      "description": "Create Service categories COMPLETELY DIFFERENT from marketplace filter categories. Zero overlap.",
+      "specific_bug_details": "Service form uses Development/Design/Creative/Research/Strategy. Marketplace filter tabs use UI Design, Frontend Dev, Product Strategy, Motion Design, Copywriting, SEO, etc. Cannot filter services!",
+      "suggestion": "Define 12-14 categories ONE source of truth constant; import same array into create-service form AND getCategoryIcon filter tabs. Unify naming TODAY."
+    },
+    {
+      "rank": 5,
+      "screen": "tasks",
+      "severity": "high",
+      "category": "layout",
+      "description": "Tasks kanban 5 columns + 280px sidebar overflows 1440px forcing horizontal scroll no affordance",
+      "specific_bug_details": "80% desktop users viewport 1366-1440 hits overflow. No visual cue to scroll, columns 4-5 hidden",
+      "suggestion": "Enable horizontal scroll container at <1600px with min-width 220 per column + chevron/gradient fade edge TODAY"
+    },
+    {
+      "rank": 6,
+      "screen": "favorites",
+      "severity": "high",
+      "category": "broken",
+      "description": "Saved services section calls `serviceCard()` function that does NOT exist → undefined render error",
+      "specific_bug_details": "renderFavorites line ~1358: savedServices.map(serviceCard). No top-level serviceCard defined; only renderServiceCard, compactService exist.",
+      "suggestion": "Replace call with compactService(service, true); verify saved services render correctly, add fallback try/catch"
+    },
+    {
+      "rank": 7,
+      "screen": "workspace-escrow",
+      "severity": "high",
+      "category": "interaction",
+      "description": "Escrow release has ZERO confirmation gate — single click releases credits, irreversible",
+      "specific_bug_details": "approveRequest() sets status completed + writes release + earn ledger entries without confirm dialog",
+      "suggestion": "Add confirm dialog modal: 'Release XXX credits to [Provider]? Cannot be undone.' + explicit checkbox 'I confirm delivery is satisfactory.' before enabling Release button"
+    },
+    {
+      "rank": 8,
+      "screen": "workspace-chat",
+      "severity": "high",
+      "category": "interaction",
+      "description": "Chat duplicated 3 rendering paths: messages page, workspace Chat tab, future conversation modal",
+      "specific_bug_details": "Different renderers per surface. Message bubbles use different CSS widths, input padding different, one bug fix not applied to all three",
+      "suggestion": "Write single renderThread(requestId, context) helper; DRY all three surfaces within 1 week; block any future chat feature work until done"
+    },
+    {
+      "rank": 9,
+      "screen": "workspace-ai",
+      "severity": "high",
+      "category": "broken",
+      "description": "AI Assistant chat input submit has no matching handleSubmit form id — user chat sends silently fail",
+      "specific_bug_details": "ai-chat-list input wrapper; no form id 'ai-assistant-form' defined matching any handleSubmit case. Suggestion chips also have no data-action handler.",
+      "suggestion": "Add form submission case + chip suggestion click handler in app.js this week. Test by sending 3 messages on open workspace and verifying persistence."
+    },
+    {
+      "rank": 10,
+      "screen": "settings",
+      "severity": "high",
+      "category": "broken",
+      "description": "Settings switches are DIV-only: no <input type=checkbox>, 100% inaccessible to screen readers / keyboard Tab",
+      "specific_bug_details": "switchControl renders div.switch with ::after pseudo element. Role=switch not set. Tab order skips them.",
+      "suggestion": "Rewrite switchControl as real checkbox with label, :checked, role=switch before accessibility audit"
+    },
+    {
+      "rank": 11,
+      "screen": "modal-signin",
+      "severity": "high",
+      "category": "broken",
+      "description": "Sign-in modal has NO render case in renderModal() → triggers blank empty overlay if future code opens it",
+      "specific_bug_details": "renderModal covers edit-profile, create-service, request-service, submit-delivery, workspace, task-completed. No signin case.",
+      "suggestion": "Remove concept of modal sign-in entirely; always route to /signin auth full screen. Add guard showToast if unhandled modal state to prevent invisible overlay."
+    },
+    {
+      "rank": 12,
+      "screen": "discover",
+      "severity": "high",
+      "category": "broken",
+      "description": "Discover category filter tab icons reference non-existent Bootstrap Icons classes (7 wrong icon names)",
+      "specific_bug_details": "bi-grid-3x3-gap-fill, bi-braces-asterisk, bi-palette-fill, bi-brush-fill, bi-compass-fill, bi-megaphone-fill etc not in Bootstrap Icons v1.11.3 package loaded via CDN",
+      "suggestion": "Lookup correct names from official v1.11.3 Bootstrap Icons docs; replace all 7 references TODAY"
+    },
+    {
+      "rank": 13,
+      "screen": "messages",
+      "severity": "high",
+      "category": "layout",
+      "description": "340px messages list squeezing chat to only 590px bubble width → cramped reading",
+      "specific_bug_details": "messages-layout 340px 1fr minus sidebars; bubbles max 72% inside renders just ~590px width. Long paragraphs wrap a lot.",
+      "suggestion": "Change to 280px 1fr; add collapse toggle to list; wrap names, prioritize avatars + truncate names"
+    },
+    {
+      "rank": 14,
+      "screen": "profile",
+      "severity": "high",
+      "category": "layout",
+      "description": "Profile layout 340px sidebar contains profile hero (avatar, cover, 4 badges, bio, skills both sections) squeezing content column",
+      "specific_bug_details": "Profile hero should be centerpiece not squeezed rail. Services + Reviews column is pushed right too far, cards look misaligned.",
+      "suggestion": "Restructure: full-width hero at TOP → then 280px left sidebar (skills-only) + 1fr main content (services + reviews). Done in ~50 line HTML shuffle."
+    },
+    {
+      "rank": 15,
+      "screen": "workspace",
+      "severity": "high",
+      "category": "layout",
+      "description": "6 workspace tabs + modal 1200px width forces tabs to overflow with NO scroll indicator",
+      "specific_bug_details": "workspace-tabs scrollbar hidden; Deliverables / Activity / Escrow hidden off-screen at right without any visual cue → user might never discover those tabs",
+      "suggestion": "Add CSS fade overlay on edges, or wrap to 2 rows, or shrink to icon-only + tooltip tabs on widths where overflow occurs; PRIORITY"
+    },
+    {
+      "rank": 16,
+      "screen": "modal-submit-delivery",
+      "severity": "high",
+      "category": "interaction",
+      "description": "Rating stars direction:rtl CSS visual effect reverses screen-reader semantic order of 5-star input",
+      "specific_bug_details": "Accessibility WCAG failure: VoiceOver reads stars in reverse visual order (5→1 instead of 1→5), impacts visually impaired users giving correct rating",
+      "suggestion": "Swap approach: use flex-direction:row-reverse container with direction:ltr instead of CSS direction flip. Fix by end of week."
+    },
+    {
+      "rank": 17,
+      "screen": "modal-conversation",
+      "severity": "high",
+      "category": "broken",
+      "description": "Conversation 'modal' action actually just navigates to messages page, not modal. Ambiguous semantics. And no conversation-modal template exists if it did need modal.",
+      "specific_bug_details": "open-conversation action (app.js) sets ui state then calls navigate('messages'). If future code expects a modal, it gets silent failure + blank render.",
+      "suggestion": "Rename 'open-conversation' action to navigate-to-conversation OR build a proper conversation modal case. Commit to one approach. Do it Monday."
+    },
+    {
+      "rank": 18,
+      "screen": "dashboard",
+      "severity": "med",
+      "category": "typography",
+      "description": "Dashboard stat says 'Completion rate' but shows absolute count not percentage",
+      "specific_bug_details": "Label promises rate ('92%') value shows count '5 swaps'. Data/label mismatch. Confuses users reading dashboard.",
+      "suggestion": "Change label to 'Completed swaps' OR calculate actual completion rate (completed / completed+aborted). Quick fix either way."
+    },
+    {
+      "rank": 19,
+      "screen": "settings",
+      "severity": "med",
+      "category": "layout",
+      "description": "Settings page only has 4 toggle controls in 2-col grid — ~600px empty whitespace below",
+      "specific_bug_details": "User expectation: Account, Appearance, Payments, Privacy, Notifications sections. Reality: 2 cards × 2 toggles = looks broken/unfinished.",
+      "suggestion": "Add placeholder sections (Account, Appearance = accent color picker & theme, Danger zone) this week, or collapse to 1-col max-w-xl centered to look finished."
+    },
+    {
+      "rank": 20,
+      "screen": "landing",
+      "severity": "med",
+      "category": "layout",
+      "description": "Hero preview cards absolute positioning breaks tablet breakpoint overlap (720-1200px)",
+      "specific_bug_details": "preview-card.primary inset:44 26 auto auto width 420px; secondary left:20 bottom:86 width 72%. On iPad-size they overlap hero-metrics cards + each other bleed out of panel.",
+      "suggestion": "Rework hero-panel layout to CSS grid named areas instead of absolute positioning. 1-2 day refactor but removes responsive class of bugs."
+    }
+  ]
+}

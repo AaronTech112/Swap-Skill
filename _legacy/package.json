@@ -1,0 +1,8 @@
+{
+  "name": "swapski-audit",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "audit": "node audit-runner.js"
+  }
+}
