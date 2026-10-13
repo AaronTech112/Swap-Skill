@@ -89,11 +89,18 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 IS_VERCEL = "VERCEL" in os.environ or os.environ.get("VERCEL_ENV") is not None
 
-if os.environ.get("DATABASE_URL"):
+db_url = (
+    os.environ.get("DATABASE_URL")
+    or os.environ.get("POSTGRES_URL")
+    or os.environ.get("POSTGRES_PRISMA_URL")
+    or os.environ.get("DATABASE_URL_UNPOOLED")
+)
+
+if db_url:
     import dj_database_url
     DATABASES = {
         "default": dj_database_url.config(
-            default=os.environ.get("DATABASE_URL"),
+            default=db_url,
             conn_max_age=600,
         )
     }
