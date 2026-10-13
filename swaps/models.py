@@ -32,7 +32,9 @@ class SwapRequest(models.Model):
     )
     service = models.ForeignKey(
         "marketplace.Service",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name="swaps"
     )
     service_title = models.CharField(max_length=120)

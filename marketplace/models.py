@@ -62,7 +62,7 @@ class Service(models.Model):
     title = models.CharField(max_length=120)
     category = models.ForeignKey(
         Category,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="services"
     )
     description = models.TextField()

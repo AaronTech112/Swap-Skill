@@ -62,15 +62,6 @@ class LedgerEntryAdmin(admin.ModelAdmin):
     search_fields = ["user__email", "user__handle", "description"]
     ordering = ["-created_at"]
 
-    # Ledger is strictly append-only: read-only in admin
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(Delivery)
