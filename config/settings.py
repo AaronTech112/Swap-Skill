@@ -89,14 +89,34 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 IS_VERCEL = "VERCEL" in os.environ or os.environ.get("VERCEL_ENV") is not None
 
+DEFAULT_DATABASE_URL = (
+    "postgresql://neondb_owner:npg_qrhxHb8aPX9u@ep-lucky-cake-b82dezmx-pooler.c-14.us-east-1.aws.neon.tech/neondb?sslmode=require"
+)
+
 db_url = (
     os.environ.get("DATABASE_URL")
     or os.environ.get("POSTGRES_URL")
     or os.environ.get("POSTGRES_PRISMA_URL")
     or os.environ.get("DATABASE_URL_UNPOOLED")
+    or DEFAULT_DATABASE_URL
 )
 
-if db_url:
+import sys
+if "test" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }
+elif os.environ.get("USE_SQLITE"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
     import dj_database_url
     DATABASES = {
         "default": dj_database_url.config(
@@ -104,28 +124,7 @@ if db_url:
             conn_max_age=600,
         )
     }
-elif IS_VERCEL:
-    tmp_db = Path("/tmp/db.sqlite3")
-    seed_db = BASE_DIR / "db.sqlite3"
-    if not tmp_db.exists() and seed_db.exists():
-        import shutil
-        try:
-            shutil.copy2(seed_db, tmp_db)
-        except Exception as e:
-            print(f"Warning: could not copy seed db to /tmp: {e}")
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": tmp_db,
-        }
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
